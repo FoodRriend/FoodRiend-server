@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, PatchUserDto } from './dto/create-user.dto';
 import { ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { type } from 'os';
 import { BookmarkType } from '../search/bookmark.type';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 // import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Profile')
@@ -19,6 +28,7 @@ export class UsersController {
   // }
 
   // 인증하고 params 유지
+  @UseGuards(JwtAuthGuard)
   @Get('profile/:id')
   @ApiOperation({
     summary: '프로필 API',
@@ -28,6 +38,8 @@ export class UsersController {
   getUserInfo(@Param('id') id: number) {
     return this.usersService.getUserInfo(id);
   }
+
+  @UseGuards(JwtAuthGuard)
   @Get('bookmark/:type/:id')
   getUserBookmark(
     @Param('type') type: BookmarkType['wantOrBest'],
@@ -36,6 +48,7 @@ export class UsersController {
     return this.usersService.getUserBookmark(type, id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch('profile/:id')
   @ApiOperation({
     summary: '프로필 수정 API',

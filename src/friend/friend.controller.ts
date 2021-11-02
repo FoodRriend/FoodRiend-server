@@ -18,11 +18,13 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 export class FriendController {
   constructor(private readonly friendService: FriendService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post('find')
   findAll(@Body() body: FindFriendDto) {
     return this.friendService.findAll(body);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('add/:id')
   addFriend(@Param('id') id: number, @Body() body: AddFriendDto) {
     return this.friendService.addFriend(id, body);

@@ -1,13 +1,22 @@
-import { Controller, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('Board')
 @Controller('api/board')
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post('write/:id')
   @ApiOperation({
     summary: '게시물 등록 API',
@@ -19,6 +28,7 @@ export class BoardController {
     return this.boardService.create(id, dto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete('delete/:id')
   @ApiOperation({
     summary: '게시물 삭제 API',

@@ -36,6 +36,12 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('checkTokenExpires')
+  checkToeknExpires(@Req() req, @Res() res: Response) {
+    return this.authService.checkTokenExpires(req.user, res);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('logout')
   logout(@Req() req, @Res() res: Response) {
     return this.authService.logout(req, res);
