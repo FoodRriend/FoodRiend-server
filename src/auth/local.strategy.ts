@@ -13,7 +13,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   async validate(kakaoId: bigint, loginType: string): Promise<any> {
     const user = await this.authService.validateUser(kakaoId, loginType);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({
+        data: null,
+        status: 401,
+      });
     }
     return user;
   }
