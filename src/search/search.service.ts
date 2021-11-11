@@ -1,4 +1,9 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, createQueryBuilder, Like, ILike, In } from 'typeorm';
 import { CreateSearchDto } from './dto/create-search.dto';
@@ -62,7 +67,10 @@ export class SearchService {
     const userData = await this.usersRepository.find({ id: id });
 
     if (userData.length === 0)
-      throw new HttpException('There is no Friend', 404);
+      throw new NotFoundException({
+        message: 'There is no Friend',
+        status: 404,
+      });
 
     // 1. user의 friendsList를 바탕으로 해당 friend의 Id를 가져온다.
     const friendsListData = await this.friendListRepository.find({
@@ -218,7 +226,11 @@ export class SearchService {
   }
 
   async findResult(id: number, query: string) {
-    if (query === '') throw new HttpException('검색어를 입력해주세요', 404);
+    if (query === '')
+      throw new NotFoundException({
+        message: '검색어를 입력해주세요',
+        status: 404,
+      });
     const client = new Client({});
     let isUserData = true;
     let isShopData = true;
@@ -455,7 +467,10 @@ export class SearchService {
 
     //! userData와 shopData가 모두 없을 경우
     if (!isUserData && !isShopData)
-      throw new HttpException(`No Matching Results`, 404);
+      throw new NotFoundException({
+        message: `No Matching Results`,
+        status: 404,
+      });
 
     return {
       data: { user: nickNameUserList, shopInfo: shopInfo },
@@ -466,7 +481,11 @@ export class SearchService {
   }
 
   async findFriend(id: number, query: string) {
-    if (query === '') throw new HttpException('Please Input Query', 401);
+    if (query === '')
+      throw new UnauthorizedException({
+        message: 'Please Input Query',
+        status: 401,
+      });
     // 이름/닉네임/연락처로 친구만 검색
 
     // 1. 입력된 id를 바탕으로 친구를 검색
@@ -497,7 +516,10 @@ export class SearchService {
     });
 
     if (correctList.length === 0)
-      throw new HttpException('No Matching Results', 404);
+      throw new NotFoundException({
+        message: 'No Matching Results',
+        status: 404,
+      });
 
     // 4. 친구이면서 query로 검색된 유저정보를 정리
     const friendData = await this.usersRepository

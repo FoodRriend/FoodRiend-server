@@ -1,9 +1,13 @@
 import {
+  ConflictException,
   ConsoleLogger,
+  ForbiddenException,
   HttpCode,
   HttpException,
   HttpStatus,
   Injectable,
+  NotAcceptableException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
@@ -55,11 +59,17 @@ export class UsersService {
     });
 
     if (Object.keys(body).length === 0) {
-      throw new HttpException('Does empty request', 403);
+      throw new ForbiddenException({
+        message: 'Does empty request',
+        status: 403,
+      });
     }
 
     if (nicknameConfilctCheck !== undefined) {
-      throw new HttpException('nickname conflict!', 409);
+      throw new ConflictException({
+        message: 'nickname conflict!',
+        status: 409,
+      });
     }
 
     for (const key in body) {
@@ -267,7 +277,10 @@ export class UsersService {
     const user = await this.usersRepository.findOne({ id: id });
 
     if (Object.keys(dto).length === 0) {
-      throw new HttpException('Does empty request', 403);
+      throw new ForbiddenException({
+        message: 'Does empty request',
+        status: 403,
+      });
     }
 
     for (const reqBody in dto) {
@@ -288,13 +301,16 @@ export class UsersService {
 
   async deleteUserInfo(id: number, body: DeleteUserDto) {
     if (!id) {
-      throw new HttpException('wrong id information!', HttpStatus.NOT_FOUND);
+      throw new NotFoundException({
+        message: 'wrong id information!',
+        status: 404,
+      });
     }
     if (!body.checkDelete) {
-      throw new HttpException(
-        'recheck delete agreement',
-        HttpStatus.NOT_ACCEPTABLE,
-      );
+      throw new NotAcceptableException({
+        message: 'recheck delete agreement',
+        status: 406,
+      });
     }
     if (id && body.checkDelete) {
       // 1. bookmark 삭제

@@ -1,4 +1,8 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Hashtag } from '../entities/Hashtag.entity';
@@ -146,7 +150,10 @@ export class BoardService {
     });
 
     if (existBoard.length === 0) {
-      throw new HttpException('Not found board', 401);
+      throw new UnauthorizedException({
+        message: 'Not found board',
+        status: 401,
+      });
     }
 
     await this.boardRepository.update(
